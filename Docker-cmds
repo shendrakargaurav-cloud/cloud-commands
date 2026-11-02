@@ -1,0 +1,222 @@
+1. Docker installation and basic commands
+    Command	                                      Description
+docker --version	                    Displays the installed Docker version.
+docker version	                      Displays Docker client and server versions.
+docker info	                          Displays Docker system information.
+sudo systemctl start docker	          Starts the Docker service.
+sudo systemctl stop docker	          Stops the Docker service.
+sudo systemctl restart docker	        Restarts the Docker service.
+sudo systemctl status docker	        Checks whether Docker is running.
+sudo systemctl enable docker	        Starts Docker automatically at boot.
+
+2. Docker image commands
+A Docker image is a template used to create a container.
+    Command	                                      Description
+docker images	                        Lists all locally available images.
+docker pull nginx	                    Downloads the NGINX image.
+docker pull ubuntu	                  Downloads the Ubuntu image.
+docker build -t myapp .	              Builds an image from a Dockerfile.
+docker tag myapp myapp:v1	            Assigns a version tag to an image.
+docker rmi myapp	                    Removes a Docker image.
+docker image inspect nginx	          Displays detailed image information.
+
+3. Docker container commands
+A container is a running instance of a Docker image.
+Command	                                                  Description
+docker run hello-world	                          Runs the Hello World container.
+docker run -it ubuntu bash	                      Starts Ubuntu interactively with a shell.
+docker run -d nginx	                              Runs NGINX in the background.
+docker run --name web nginx	                      Creates a container named web.
+docker run -d -p 8080:80 nginx	                  Maps host port 8080 to container port 80.
+docker ps	                                        Lists running containers.
+docker ps -a	                                    Lists all containers, including stopped ones.
+docker start web	                                Starts a stopped container.
+docker stop web	                                  Stops a running container.
+docker restart web	                              Restarts a container.
+docker rm web	                                    Removes a stopped container.
+docker rm -f web	                                Forcefully removes a container.
+docker logs web	                                  Displays container logs.
+docker exec -it web bash	                        Opens a shell inside a running container.
+docker inspect web	                              Displays detailed container information
+
+4. Dockerfile instructions
+A Dockerfile is a text file containing instructions to build a Docker image.
+Instruction	                                                Description
+FROM	                                                Specifies the base image.
+WORKDIR	                                              Sets the working directory inside the image.
+COPY	                                                Copies files from host to image.
+ADD	                                                  Copies files and can extract local archives.
+RUN	                                                  Executes commands while building the image.
+CMD	                                                  Specifies the default command when a container starts.
+ENTRYPOINT	                                          Specifies the main executable of the container.
+EXPOSE	                                              Documents the port used by the application.
+ENV	                                                  Sets an environment variable.
+ARG	                                                  Defines a variable available during image building.
+USER	                                                Specifies the user to run commands as.
+VOLUME	                                              Declares a mount point for persistent data.
+
+FROM python:3.12
+WORKDIR /app
+COPY app.py .
+CMD ["python", "app.py"]
+
+docker build -t python-hello .
+docker run python-hello
+(docker build creates the image, and docker run executes it.)
+
+5. Docker networking commands
+Docker networking allows containers to communicate with each other.
+Command	                                                         Description
+docker network ls	                                      Lists Docker networks.
+docker network create mynet	                            Creates a network named mynet.
+docker network inspect mynet	                          Displays network details.
+docker network connect mynet web	                      Connects a container to a network.
+docker network disconnect mynet web	                    Disconnects a container from a network.
+docker network rm mynet	                                Removes a network.
+
+Connect two containers
+docker network create mynet
+Creates a network.
+docker run -d --name web --network mynet nginx
+Runs NGINX inside the network.
+docker run -it --network mynet busybox sh
+Starts BusyBox inside the same network.
+Inside BusyBox:
+ping web
+Tests communication with the NGINX container using its name.
+
+6. Docker volume commands
+A Docker volume stores data outside the container's writable layer so that the data can persist when a container is removed.
+Command	                                                            Description
+docker volume ls	                                        Lists Docker volumes.
+docker volume create myvol	                              Creates a volume.
+docker volume inspect myvol	                              Displays volume details.
+docker volume rm myvol	                                  Removes a volume.
+docker volume prune	                                      Removes unused volumes.
+
+
+Mount a volume
+docker volume create myvol
+Creates a volume.
+docker run -it --name c1 -v myvol:/data ubuntu bash
+Mounts the volume at /data inside Ubuntu.
+Inside the container:
+cd /data
+echo "Hello Docker" > file.txt
+exit
+Creates a file in the mounted volume.
+docker run --rm -v myvol:/data ubuntu cat /data/file.txt
+Reads the same file from another container, demonstrating persistent data.
+
+7. DockerHub commands
+DockerHub is a cloud-based registry used to store and share Docker images.
+Command	                                                     Description
+docker login	                                            Logs in to DockerHub.
+docker logout	                                            Logs out from DockerHub.
+docker tag myapp USERNAME/myapp:v1	                      Tags an image for DockerHub.
+docker push USERNAME/myapp:v1	                            Uploads an image to DockerHub.
+docker pull USERNAME/myapp:v1	                            Downloads an image from DockerHub.
+
+Practical example
+docker login
+docker build -t myapp .
+docker tag myapp USERNAME/myapp:v1
+docker push USERNAME/myapp:v1
+(This builds an image, tags it with your DockerHub username, and uploads it.)
+
+8. Docker Compose commands
+Docker Compose is used to manage multiple containers using a YAML file.
+   Command	                                                        Description
+docker compose up	                                        Creates and starts services.
+docker compose up -d	                                    Starts services in the background.
+docker compose down	                                      Stops and removes services.
+docker compose ps	                                        Lists Compose containers.
+docker compose logs	                                      Displays service logs.
+docker compose logs -f	                                  Continuously displays logs.
+docker compose build	                                    Builds service images.
+docker compose restart	                                  Restarts services.
+docker compose exec web bash	                            Opens a shell in the web service.
+docker compose pull	                                      Downloads service images.
+
+
+docker compose up -d
+docker compose ps
+docker compose logs
+docker compose down
+(These commands start, inspect, display logs, and stop the Compose application.)
+
+9. Java Hello World using Docker
+The syllabus requires running Hello World using a Java container.
+
+Create HelloWorld.java:
+class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello World");
+    }
+}
+
+
+Dockerfile:
+FROM openjdk:17
+WORKDIR /app
+COPY HelloWorld.java .
+RUN javac HelloWorld.java
+CMD ["java", "HelloWorld"]
+
+Commands:
+docker build -t java-hello .
+docker run java-hello
+
+- docker build builds the Java image.
+- docker run executes the Java program.
+
+
+10. Python Hello World using Docker
+Create app.py:
+print("Hello World")
+
+Dockerfile:
+FROM python:3.12
+WORKDIR /app
+COPY app.py .
+CMD ["python", "app.py"]
+
+Commands:
+docker build -t python-hello .
+docker run python-hello
+
+- docker build creates the Python image.
+- docker run executes the Python application.
+
+
+11. Docker with MySQL
+Your syllabus requires demonstrating container networking and volumes by connecting an application with MySQL.
+Start MySQL container
+docker run -d \
+  --name mysql \
+  -e MYSQL_ROOT_PASSWORD=root123 \
+  -e MYSQL_DATABASE=testdb \
+  -p 3306:3306 \
+  mysql:8
+
+
+Option	Description
+-d	Runs in the background.
+--name mysql	Names the container.
+-e	Sets an environment variable.
+-p 3306:3306	Maps MySQL port.
+mysql:8	Specifies the MySQL image.
+
+Check container:
+docker ps
+docker logs mysql
+
+Connect to MySQL:
+docker exec -it mysql mysql -uroot -p
+
+Inside MySQL:
+SHOW DATABASES;
+USE testdb;
+
+- SHOW DATABASES displays databases.
+- USE testdb selects the database.
