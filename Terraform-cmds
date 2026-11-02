@@ -1,0 +1,233 @@
+1. Terraform commands to remember
+Command	                                                        Simple use
+terraform -version	                                          Check Terraform version
+terraform init	                                              Initialize the working directory and download providers
+terraform fmt	                                                Format .tf files
+terraform validate	                                          Check configuration syntax
+terraform plan	                                              Preview what Terraform will create/change
+terraform apply	                                              Create or update infrastructure
+terraform destroy	                                            Delete infrastructure managed by the configuration
+terraform show	                                              Display current state details
+terraform state list	                                        List resources in the state
+terraform output	                                            Display configured outputs
+
+
+Typical workflow:
+terraform init
+terraform fmt
+terraform validate
+terraform plan
+terraform apply
+
+To approve automatically in a lab:
+terraform apply -auto-approve
+
+Use terraform destroy only when you intend to delete the resources.
+
+
+
+2. Set up Terraform and AWS
+Check Terraform:
+terraform -version
+
+Check AWS CLI:
+aws --version
+
+Configure AWS credentials:
+aws configure
+
+Enter your AWS Access Key ID, Secret Access Key, region, and output format when prompted.
+
+Verify credentials:
+aws sts get-caller-identity
+
+Meaning: Terraform uses AWS credentials to create resources in your AWS account. Do not share or hard-code your secret keys.
+
+
+
+3. Basic Terraform configuration — EC2
+Create a file named main.tf.
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = "ap-south-1"
+}
+
+resource "aws_instance" "web" {
+  ami           = "ami-xxxxxxxx"
+  instance_type = "t2.micro"
+
+  tags = {
+    Name = "Terraform-EC2"
+  }
+}
+
+
+- provider: Specifies the cloud provider.
+- resource: Defines the infrastructure resource.
+- aws_instance: AWS EC2 instance resource.
+- ami: The machine image ID. Replace the placeholder with a valid AMI ID for the selected region.
+- instance_type: Defines the EC2 instance size.
+- tags: Adds a name tag to the instance.
+Run:
+terraform init
+terraform plan
+terraform apply
+
+
+
+4. Variables and outputs
+variables.tf
+variable "instance_type" {
+  default = "t2.micro"
+}
+
+Use the variable in main.tf
+instance_type = var.instance_type
+
+Meaning: A variable allows you to change a value without editing the main configuration.
+outputs.tf
+output "instance_id" {
+  value = aws_instance.web.id
+}
+
+Meaning: An output displays useful information after Terraform creates a resource.
+
+Run:
+terraform apply
+terraform output
+
+
+
+5. Create a VPC, subnet, and EC2
+The syllabus includes creating a VPC, subnet, and EC2 instance within that subnet. PGCP-HPCSA_SCHOOL_TG__cloud Theory.pdf
+
+Example main.tf:
+
+provider "aws" {
+  region = "ap-south-1"
+}
+
+resource "aws_vpc" "main" {
+  cidr_block = "10.0.0.0/16"
+
+  tags = {
+    Name = "Terraform-VPC"
+  }
+}
+
+resource "aws_subnet" "main" {
+  vpc_id     = aws_vpc.main.id
+  cidr_block = "10.0.1.0/24"
+
+  tags = {
+    Name = "Terraform-Subnet"
+  }
+}
+
+resource "aws_instance" "web" {
+  ami           = "ami-xxxxxxxx"
+  instance_type = "t2.micro"
+  subnet_id     = aws_subnet.main.id
+
+  tags = {
+    Name = "Terraform-EC2"
+  }
+}
+
+
+Replace the AMI placeholder with a valid AMI ID in your selected region.
+
+Run:
+terraform init
+terraform validate
+terraform plan
+terraform apply
+
+Remember: vpc_id connects the subnet to the VPC, and subnet_id connects the EC2 instance to the subnet.
+
+
+6. Terraform state management
+Terraform state records the resources Terraform manages and their relationship to your configuration.
+Command	Use
+terraform state list	List managed resources
+terraform state show RESOURCE	Show details of a resource
+terraform show	Show current state information
+terraform refresh	Refresh state from real infrastructure; legacy workflow
+terraform plan	Compare configuration with actual infrastructure
+
+Example:
+terraform state list
+
+Output might include:
+aws_vpc.main
+aws_subnet.main
+aws_instance.web
+
+Important: The state file can contain sensitive values. Do not casually edit or share terraform.tfstate.
+
+
+7. Terraform modules
+A module is a reusable group of Terraform configuration files.
+
+Example folder structure:
+terraform-project/
+├── main.tf
+├── variables.tf
+├── outputs.tf
+└── modules/
+    └── ec2/
+        ├── main.tf
+        ├── variables.tf
+        └── outputs.tf
+
+
+In the root main.tf, call the module:
+module "my_ec2" {
+  source        = "./modules/ec2"
+  instance_type = "t2.micro"
+}
+
+Meaning: Instead of writing the same EC2 configuration repeatedly, create a module and reuse it.
+
+
+8. Remote backend using S3
+A backend defines where Terraform stores its state file. An S3 backend stores state remotely so it can be shared by a team. Your S3 bucket must already exist.
+
+Example backend configuration:
+terraform {
+  backend "s3" {
+    bucket = "my-terraform-state-bucket"
+    key    = "terraform/state.tfstate"
+    region = "ap-south-1"
+  }
+}
+
+Then run:
+terraform init
+
+Meaning: Terraform initializes and configures the backend. The bucket name must be replaced with your actual S3 bucket
+
+
+9. Quick revision
+Topic	                                                              Remember
+IaC	                                                          Manage infrastructure through code
+Terraform	                                                    Tool used for IaC
+Provider	                                                    Cloud platform, such as AWS
+Resource	                                                    Infrastructure object, such as EC2
+init	                                                        Initialize Terraform
+plan	                                                        Preview changes
+apply	                                                        Apply changes
+destroy	                                                      Delete managed resources
+State	                                                        Tracks managed infrastructure
+Module	                                                      Reusable Terraform configuration
+Backend	                                                      Where Terraform state is stored
+Variable	                                                    Input value
+Output	                                                      Displays a result
