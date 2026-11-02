@@ -1,0 +1,73 @@
+1. Git Installation
+sudo apt update
+sudo apt install git -y
+git --version
+
+
+2. Git Configuration
+git config --global user.name "Aditya"
+git config --global user.email "abc@gmail.com"
+git config --list
+
+
+3. Version Control
+git init
+git status
+git add file.txt
+git add .
+git commit -m "Initial commit"
+git log
+git log --oneline
+git diff
+
+
+4. Working with Remote Repository (GitHub)
+git clone <repository-url>
+git remote -v
+git remote add origin <repository-url>
+git remote remove origin
+git push -u origin main
+git push
+git pull origin main
+git fetch origin
+
+
+5. Branching
+git branch
+git branch feature
+git switch feature
+git switch main
+git switch -c feature
+git branch -d feature
+
+
+6. Merging
+git merge feature
+git merge --abort
+
+
+7. Stashing
+git stash
+git stash list
+git stash apply
+git stash pop
+git stash drop
+git stash clear
+
+
+8. Rebasing
+git rebase main
+git rebase --continue
+git rebase --abort
+
+
+9. Reverting
+git revert <commit-id>
+
+
+10. Resetting
+git reset --soft HEAD~1
+git reset --mixed HEAD~1
+git reset --hard HEAD~1
+
+
