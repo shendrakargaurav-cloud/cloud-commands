@@ -1,0 +1,237 @@
+1. Kubernetes basic commands
+kubectl is the command-line tool used to communicate with a Kubernetes cluster.
+Command	                                                Description
+kubectl version	                                  Displays Kubernetes version information.
+kubectl cluster-info	                            Displays cluster information.
+kubectl get nodes	                                Lists all cluster nodes.
+kubectl describe node <name>	                    Displays details of a node.
+kubectl get namespaces	                          Lists all namespaces.
+kubectl get all	                                  Lists common resources in the current namespace.
+kubectl get all -A	                              Lists common resources across namespaces.
+
+
+2. Pod commands
+A Pod is the smallest deployable unit in Kubernetes. It contains one or more containers.
+Command	                                                 Description
+kubectl get pods	                                 Lists Pods.
+kubectl get pods -o wide	                         Displays Pods with additional details.
+kubectl get pods -A	                               Lists Pods in all namespaces.
+kubectl describe pod nginx	                       Displays details of the NGINX Pod.
+kubectl logs nginx	                               Displays Pod logs.
+kubectl logs -f nginx	                             Continuously displays Pod logs.
+kubectl exec -it nginx -- sh	                     Opens a shell inside the Pod.
+kubectl delete pod nginx	                         Deletes the Pod.
+kubectl run nginx --image=nginx	                   Creates an NGINX Pod.
+kubectl run nginx --image=nginx --port=80	         Creates an NGINX Pod with port 80 specified.
+
+
+3. ReplicaSet commands
+A ReplicaSet maintains the required number of Pod replicas.
+Command	                                                  Description
+kubectl get replicasets	                            Lists ReplicaSets.
+kubectl get rs	                                    Short form to list ReplicaSets.
+kubectl describe rs <name>	                        Displays ReplicaSet details.
+kubectl scale rs <name> --replicas=5	              Sets ReplicaSet replicas to 5.
+kubectl delete rs <name>	                          Deletes a ReplicaSet.
+
+
+4. Deployment commands
+A Deployment manages Pods and ReplicaSets. It supports scaling and rolling updates.
+Command	                                                                      Description
+kubectl get deployments	                                                Lists Deployments.
+kubectl get deploy	                                                    Short form to list Deployments.
+kubectl create deployment nginx --image=nginx	                          Creates an NGINX Deployment.
+kubectl create deployment nginx --image=nginx --replicas=5	            Creates a Deployment with 5 replicas.
+kubectl describe deployment nginx	                                      Displays Deployment details.
+kubectl scale deployment nginx --replicas=5	                            Scales Deployment to 5 replicas.
+kubectl rollout status deployment/nginx	                                Checks rollout status.
+kubectl rollout history deployment/nginx	                              Displays rollout history.
+kubectl rollout undo deployment/nginx	                                  Reverts the latest rollout.
+kubectl set image deployment/nginx nginx=nginx:1.27	                    Updates the container image.
+kubectl delete deployment nginx	                                        Deletes the Deployment.
+
+
+5. Service commands
+A Service provides a stable network endpoint to access Pods.
+Command	                                                                  Description
+kubectl get services	                                                  Lists Services.
+kubectl get svc	                                                        Short form to list Services.
+kubectl describe svc nginx	                                            Displays Service details.
+kubectl expose deployment nginx --port=80 --type=ClusterIP	            Exposes Deployment internally.
+kubectl expose deployment nginx --port=80 --type=NodePort	              Exposes Deployment through a node port.
+kubectl expose deployment nginx --port=80 --type=LoadBalancer	          Exposes Deployment using a load balancer.
+kubectl delete svc nginx	                                              Deletes a Service.
+
+Service types
+Type	                    Description
+ClusterIP	             Accessible inside the cluster.
+NodePort	             Accessible through a port on the node.
+LoadBalancer	         Exposes the Service through a load balancer.
+
+
+6. Kubernetes YAML commands
+YAML files define Kubernetes resources such as Pods, Deployments and Services.
+Command	                                                Description
+kubectl apply -f pod.yaml	                          Creates or updates resources from YAML.
+kubectl create -f pod.yaml	                        Creates resources from YAML.
+kubectl get -f pod.yaml	                            Displays the resource specified in YAML.
+kubectl delete -f pod.yaml	                        Deletes resources specified in YAML.
+kubectl diff -f pod.yaml	                          Shows configuration differences.
+kubectl get pods -o yaml	                          Displays Pods in YAML format.
+kubectl get deployment nginx -o yaml	              Displays Deployment configuration in YAML.
+kubectl explain pod	                                Explains Pod fields.
+kubectl explain deployment.spec	                    Explains Deployment specification fields.
+
+
+7. Lab: Run an NGINX Pod
+This is explicitly mentioned in your syllabus.
+Method 1: Using command
+kubectl run nginx --image=nginx
+kubectl get pods
+kubectl describe pod nginx
+kubectl logs nginx
+
+
+Description:
+- kubectl run creates the Pod.
+- kubectl get pods checks its status.
+- kubectl describe displays details.
+- kubectl logs displays application logs.
+Method 2: Using YAML
+Create nginx-pod.yaml:
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+    - name: nginx
+      image: nginx
+      ports:
+        - containerPort: 80
+
+
+Apply the YAML:
+kubectl apply -f nginx-pod.yaml
+kubectl get pods
+
+
+Description: kubectl apply -f creates the Pod using the YAML configuration.
+
+
+
+
+8. Lab: NGINX Deployment with 5 replicas
+This is also explicitly mentioned in your syllabus.
+Method 1: Using commands
+kubectl create deployment nginx --image=nginx
+kubectl scale deployment nginx --replicas=5
+kubectl get deployments
+kubectl get pods
+
+
+Description:
+- Creates an NGINX Deployment.
+- Scales it to 5 replicas.
+- Checks the Deployment and Pods.
+Method 2: Using YAML
+Create nginx-deployment.yaml:
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx
+          ports:
+            - containerPort: 80
+
+
+Apply:
+kubectl apply -f nginx-deployment.yaml
+kubectl get deployments
+kubectl get replicasets
+kubectl get pods
+
+
+Description: The YAML creates a Deployment that maintains 5 NGINX Pods.
+
+
+
+9. Lab: Access NGINX using a Service
+Your syllabus requires accessing the Deployment using a Service.
+
+Create nginx-service.yaml:
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  type: NodePort
+  selector:
+    app: nginx
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30080
+
+
+Apply:
+kubectl apply -f nginx-service.yaml
+kubectl get svc
+kubectl describe svc nginx-service
+
+
+Description:
+- kubectl apply creates the Service.
+- kubectl get svc displays the Service.
+- kubectl describe svc displays its configuration.
+Access the application through a local cluster using port forwarding:
+kubectl port-forward service/nginx-service 8080:80
+
+
+Open:
+http://localhost:8080
+
+
+This forwards local port 8080 to port 80 of the Service.
+
+
+10. Kubernetes troubleshooting commands
+Command	                                            Description
+kubectl get events	                          Displays cluster events.
+kubectl describe pod nginx	                  Helps identify Pod problems.
+kubectl logs nginx	                          Displays application logs.
+kubectl logs nginx --previous	                Displays logs from the previous container instance.
+kubectl get pods -o wide	                    Displays Pod IP and node information.
+kubectl get endpoints	                        Displays Service endpoints.
+kubectl get svc	                              Checks available Services.
+kubectl delete pod nginx	                    Deletes a Pod.
+kubectl delete deployment nginx	              Deletes a Deployment.
+
+
+Final Kubernetes revision sheet
+These are the most important commands to memorize for your lab exam.
+Command	                                                                          Remember
+kubectl get nodes	                                                              List nodes
+kubectl get pods	                                                              List Pods
+kubectl run nginx --image=nginx	                                                Create Pod
+kubectl describe pod nginx	                                                    Pod details
+kubectl logs nginx	                                                            Pod logs
+kubectl create deployment nginx --image=nginx	                                  Create Deployment
+kubectl scale deployment nginx --replicas=5	                                    Scale Deployment
+kubectl get rs	                                                                List ReplicaSets
+kubectl get svc	                                                                List Services
+kubectl expose deployment nginx --port=80 --type=NodePort	                      Expose Deployment
+kubectl apply -f nginx.yaml	                                                    Apply YAML
+kubectl delete -f nginx.yaml	                                                  Delete YAML resources
