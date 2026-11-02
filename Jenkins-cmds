@@ -1,0 +1,131 @@
+2. Install Jenkins on Ubuntu
+Jenkins requires Java.
+sudo apt update
+
+
+Updates package lists.
+sudo apt install fontconfig openjdk-21-jre -y
+
+
+Installs Java runtime.
+java -version
+
+
+Checks Java installation.
+
+Install Jenkins using the official Jenkins repository instructions for your OS version. After installation:
+sudo systemctl enable jenkins
+
+
+Enables Jenkins to start at boot.
+sudo systemctl start jenkins
+
+
+Starts Jenkins.
+sudo systemctl status jenkins
+
+
+Checks Jenkins status.
+
+Jenkins normally opens at:
+http://localhost:8080
+
+
+Get the initial password:
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+
+
+3. Jenkins service commands
+       Command	                                                Use
+sudo systemctl start jenkins	                              Start Jenkins
+sudo systemctl stop jenkins	                                Stop Jenkins
+sudo systemctl restart jenkins	                            Restart Jenkins
+sudo systemctl status jenkins	                              Check status
+sudo systemctl enable jenkins	                              Start automatically at boot
+
+
+4. Create a simple Jenkins job
+In the Jenkins web interface:
+1) Click New Item.
+2) Enter a job name, e.g. Hello-World.
+3) Select Freestyle project.
+4) Click OK.
+5) Under Build Steps, select Execute shell.
+6) Enter:
+echo "Hello World"
+
+
+7) Click Save.
+8) Click Build Now.
+9) Open the build and select Console Output to see the result.
+
+
+5. Jenkins Hello World
+In Execute shell, use:
+echo "Hello World"
+
+Expected output in Console Output:
+Hello World
+
+This verifies that Jenkins can execute a basic command.
+
+
+6. GitHub and Jenkins
+Purpose: Jenkins gets source code from a GitHub repository and runs a build.
+Commands to check Git
+git --version
+
+Checks Git installation.
+git clone https://github.com/USERNAME/REPOSITORY.git
+
+Clones a GitHub repository.
+
+Configure in Jenkins
+1) Create a Freestyle project.
+2) Under Source Code Management, select Git.
+3) Enter the GitHub repository URL.
+4) Add credentials if the repository is private.
+5) Under Build Steps → Execute shell, enter:
+echo "Code pulled from GitHub"
+
+6) Save and click Build Now.
+7) Check Console Output.
+Remember: GitHub stores the code; Jenkins automates the build.
+
+
+7. Docker and Jenkins
+Purpose: Jenkins runs Docker commands to build or run containers.
+
+Check Docker:
+docker --version
+
+Checks Docker installation.
+sudo systemctl start docker
+
+Starts Docker.
+sudo docker ps
+
+Lists running containers.
+
+Build a Docker image through Jenkins
+In Jenkins Execute shell, assuming a Dockerfile is present in the job’s workspace:
+docker build -t myapp .
+
+Builds an image named myapp.
+docker images
+
+Lists Docker images.
+docker run -d -p 8081:80 --name mycontainer myapp
+
+Runs the image as a container and maps host port 8081 to container port 80.
+
+
+8. Quick revision
+Topic	                                              Remember
+Jenkins	                                      Automation server
+Job	                                          Task executed by Jenkins
+Build	                                        Execution of a job
+Freestyle	                                    Basic Jenkins job
+Console Output	                              Shows build logs
+GitHub integration	                          Jenkins retrieves code from GitHub
+Docker integration	                          Jenkins builds or runs Docker images/containers
