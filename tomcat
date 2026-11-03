@@ -1,0 +1,27 @@
+user@USER:~/python$ cd
+user@USER:~$ mkdir tomcat
+user@USER:~$ cd tomcat
+user@USER:~/tomcat$ sudo docker pull tomcat
+[sudo] password for user: 
+Using default tag: latest
+latest: Pulling from library/tomcat
+edafa32f5d9e: Pull complete 
+b264d360d2ec: Pull complete 
+4f4fb700ef54: Pull complete 
+62e9914a8632: Pull complete 
+ac3a58965d2e: Pull complete 
+eff0e1f02e2e: Pull complete 
+53b0d9a37b71: Pull complete 
+f3f25b84a7d7: Pull complete 
+26965d20c8e8: Download complete 
+d6ef93005b2f: Download complete 
+Digest: sha256:8f0edc859bdcd6c34faeaf863bc99fa31ced7e31f26efbb6d94a7027cefd7b36
+Status: Downloaded newer image for tomcat:latest
+docker.io/library/tomcat:latest
+user@USER:~/tomcat$ sudo docker run -d --name my-tomcat -p 8888:8080 tomcat
+35dedfaf7c6d2941329158794bb72de84e91fedf457b6c5e7cb263b6f27f746a
+user@USER:~/tomcat$ docker ps
+permission denied while trying to connect to the docker API at unix:///var/run/docker.sock
+user@USER:~/tomcat$ sudo docker ps
+CONTAINER ID   IMAGE     COMMAND             CREATED          STATUS          PORTS                                         NAMES
+35dedfaf7c6d   tomcat    "catalina.sh run"   45 seconds ago   Up 44 seconds   0.0.0.0:8888->8080/tcp, [::]:8888->8080/tcp   my-tomcat
