@@ -1,0 +1,75 @@
+user@USER:~/Desktop$ cd 
+user@USER:~$ docker ps
+permission denied while trying to connect to the docker API at unix:///var/run/docker.sock
+user@USER:~$ ^C
+user@USER:~$ docker --version
+Docker version 29.9.2, build a82e528
+user@USER:~$ sudo docker ps
+[sudo] password for user: 
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+user@USER:~$ sudo usermod -aG docker user
+user@USER:~$ docker ps
+permission denied while trying to connect to the docker API at unix:///var/run/docker.sock
+user@USER:~$ sudo docker ps
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+user@USER:~$ docker images
+permission denied while trying to connect to the docker API at unix:///var/run/docker.sock
+user@USER:~$ sudo docker images
+                                                                                                                                                                    i Info →   U  In Use
+IMAGE   ID             DISK USAGE   CONTENT SIZE   EXTRA
+user@USER:~$ sudo docker pull nginx:latest
+^Cuser@USER:~$ sudo doccker pull nginx:latest
+sudo: doccker: command not found
+user@USER:~$ sudo docker pull nginx:latest
+Error response from daemon: failed to resolve reference "docker.io/library/nginx:latest": failed to do request: Head "https://registry-1.docker.io/v2/library/nginx/manifests/latest": dial tcp: lookup registry-1.docker.io on 127.0.0.53:53: read udp 127.0.0.1:48972->127.0.0.53:53: i/o timeout
+user@USER:~$ sudo nano /etc/docker/daemon.json
+user@USER:~$ sudo systemctl restart docker
+user@USER:~$ sudo docker pull nginx:latest
+Error response from daemon: failed to resolve reference "docker.io/library/nginx:latest": failed to do request: Head "https://registry-1.docker.io/v2/library/nginx/manifests/latest": dial tcp: lookup registry-1.docker.io on 127.0.0.53:53: read udp 127.0.0.1:38168->127.0.0.53:53: i/o timeout
+user@USER:~$ sudo nano /etc/systemd/resolved.conf
+user@USER:~$ sudo systemctl restart systemd-resolved
+user@USER:~$ sudo docker pull nginx:latest
+latest: Pulling from library/nginx
+a670537bed70: Pull complete 
+c139fe92686d: Pull complete 
+6e2ab1f3ef4e: Pull complete 
+a071113ac575: Pull complete 
+9f604dae09b2: Pull complete 
+6fc242d221a6: Pull complete 
+d322f1bf41d8: Pull complete 
+ca81da665177: Download complete 
+05a7d8870b4b: Download complete 
+Digest: sha256:5ab5b0b01097420873a3f3330f44248e34a3c2a3e8d5ee30658aeae8cb7435da
+Status: Downloaded newer image for nginx:latest
+docker.io/library/nginx:latest
+user@USER:~$ docker images
+permission denied while trying to connect to the docker API at unix:///var/run/docker.sock
+user@USER:~$ sudo docker images
+                                                                                                                                                                    i Info →   U  In Use
+IMAGE          ID             DISK USAGE   CONTENT SIZE   EXTRA
+nginx:latest   5ab5b0b01097        243MB         66.8MB        
+user@USER:~$ sudo docker run --name Test -d -p 8080:80 nginx:latest
+7523cbb3f6382bcea856f2478482e9d159766fbc86af42987c868554895f4960
+user@USER:~$ sudo docker ps 
+CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS          PORTS                                     NAMES
+7523cbb3f638   nginx:latest   "/docker-entrypoint.…"   57 seconds ago   Up 57 seconds   0.0.0.0:8080->80/tcp, [::]:8080->80/tcp   Test
+user@USER:~$ sudo docker exec -it test /bin/bash
+Error response from daemon: No such container: test
+user@USER:~$ sudo docker exec -it Test /bin/bash
+root@7523cbb3f638:/# ls
+bin  boot  dev	docker-entrypoint.d  docker-entrypoint.sh  etc	home  lib  lib64  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
+root@7523cbb3f638:/# exit
+exit
+user@USER:~$ sudo docker ps
+CONTAINER ID   IMAGE          COMMAND                  CREATED         STATUS         PORTS                                     NAMES
+7523cbb3f638   nginx:latest   "/docker-entrypoint.…"   3 minutes ago   Up 3 minutes   0.0.0.0:8080->80/tcp, [::]:8080->80/tcp   Test
+user@USER:~$ sudo docker stop Test
+Test
+user@USER:~$ sudo docker rm Test
+Test
+user@USER:~$ sudo docker ps
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+user@USER:~$ sudo docker ps -a
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+user@USER:~$ 
+
