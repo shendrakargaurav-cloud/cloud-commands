@@ -1,0 +1,46 @@
+user@USER:~$ mkdir python
+user@USER:~$ cd python
+user@USER:~/python$ nano python.py
+user@USER:~/python$ nano Dockerfile
+user@USER:~/python$ docker build -t python-hello .
+ERROR: permission denied while trying to connect to the docker API at unix:///var/run/docker.sock
+user@USER:~/python$ sudo docker build -t python-hello .
+[sudo] password for user: 
+[+] Building 0.0s (1/1) FINISHED                                                                                                                                         docker:default
+ => [internal] load build definition from Dockerfile                                                                                                                               0.0s
+ => => transferring dockerfile: 131B                                                                                                                                               0.0s
+Dockerfile:1
+--------------------
+   1 | >>> FROM: python:3.11.18-slim-trixie
+   2 |     WORKDIR /python
+   3 |     COPY python.py .
+--------------------
+ERROR: failed to build: failed to solve: dockerfile parse error on line 1: unknown instruction: FROM: (did you mean FROM?)
+user@USER:~/python$ nano Dockerfile
+user@USER:~/python$ sudo docker build -t python-hello .
+[+] Building 2.3s (8/8) FINISHED                                                                                                                                         docker:default
+ => [internal] load build definition from Dockerfile                                                                                                                               0.0s
+ => => transferring dockerfile: 130B                                                                                                                                               0.0s
+ => [internal] load metadata for docker.io/library/python:3.11.18-slim-trixie                                                                                                      1.7s
+ => [internal] load .dockerignore                                                                                                                                                  0.0s
+ => => transferring context: 2B                                                                                                                                                    0.0s
+ => CACHED [1/3] FROM docker.io/library/python:3.11.18-slim-trixie@sha256:db20d8506e2f15b6db39b40b6015ca46bae855dec6dd326d462cfe79ae972893                                         0.0s
+ => => resolve docker.io/library/python:3.11.18-slim-trixie@sha256:db20d8506e2f15b6db39b40b6015ca46bae855dec6dd326d462cfe79ae972893                                                0.0s
+ => [internal] load build context                                                                                                                                                  0.0s
+ => => transferring context: 52B                                                                                                                                                   0.0s
+ => [2/3] WORKDIR /python                                                                                                                                                          0.0s
+ => [3/3] COPY python.py .                                                                                                                                                         0.0s
+ => exporting to image                                                                                                                                                             0.5s
+ => => exporting layers                                                                                                                                                            0.0s
+ => => exporting manifest sha256:dfb59c411f6285d019f10121601f477674389545f34a5e40267762321016056d                                                                                  0.0s
+ => => exporting config sha256:dfa9b1b6cfb6feabbd446dc83fe1313bb433e18bcce03542fd0a1c11e9177dda                                                                                    0.0s
+ => => exporting attestation manifest sha256:7bfd3e0fc0e19db6a6c00a6d3b761efbbee6dbcb583d9a9a0ccefca9e6e10f22                                                                      0.0s
+ => => exporting manifest list sha256:739ba3cf6fbeb41d2a254a34345d4534c1199133412426fc54d9b7dd1507ee27                                                                             0.0s
+ => => naming to docker.io/library/python-hello:latest                                                                                                                             0.0s
+ => => unpacking to docker.io/library/python-hello:latest                                                                                                                          0.4s
+user@USER:~/python$ docker run python-hello
+permission denied while trying to connect to the docker API at unix:///var/run/docker.sock
+user@USER:~/python$ sudo docker run python-hello
+wgferf
+user@USER:~/python$ 
+
