@@ -1,0 +1,80 @@
+user@USER:~$ mkdir webappdemo
+user@USER:~$ cd webappdemo
+user@USER:~/webappdemo$ git clone https://github.com/newdelthis/webappdemo.git
+Cloning into 'webappdemo'...
+remote: Enumerating objects: 7, done.
+remote: Counting objects: 100% (7/7), done.
+remote: Compressing objects: 100% (5/5), done.
+remote: Total 7 (delta 0), reused 7 (delta 0), pack-reused 0 (from 0)
+Receiving objects: 100% (7/7), done.
+user@USER:~/webappdemo$ ls
+webappdemo
+user@USER:~/webappdemo$ cd webappdemo
+user@USER:~/webappdemo/webappdemo$ cat Dockerfile 
+FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+EXPOSE 8080
+CMD ["python", "app.py"]user@USER:~/webappdemo/webappdemo$ sudo docker build -t test2 .
+[sudo] password for user: 
+[+] Building 16.8s (10/10) FINISHED                                                                                                                                      docker:default
+ => [internal] load build definition from Dockerfile                                                                                                                               0.0s
+ => => transferring dockerfile: 194B                                                                                                                                               0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim                                                                                                                7.8s
+ => [internal] load .dockerignore                                                                                                                                                  0.0s
+ => => transferring context: 2B                                                                                                                                                    0.0s
+ => [1/5] FROM docker.io/library/python:3.11-slim@sha256:db20d8506e2f15b6db39b40b6015ca46bae855dec6dd326d462cfe79ae972893                                                          4.3s
+ => => resolve docker.io/library/python:3.11-slim@sha256:db20d8506e2f15b6db39b40b6015ca46bae855dec6dd326d462cfe79ae972893                                                          0.0s
+ => => extracting sha256:6fc242d221a673263eabd14a9ad9584d3177c96e5cb504c891497338e2f912f5                                                                                          0.5s
+ => => sha256:361db81715472ecba5e656c314c299bd945309020483159596a8d123c2b1d580 251B / 251B                                                                                         0.3s
+ => => sha256:24ff04c921070df4f4dc987278926d5dabde59d57b55ae3665439331f79af932 14.46MB / 14.46MB                                                                                   1.9s
+ => => sha256:ee5aaeba9945927662bea2702989dfd74d9273796415b896363e6a9c44d9a8ce 1.29MB / 1.29MB                                                                                     3.9s
+ => => extracting sha256:ee5aaeba9945927662bea2702989dfd74d9273796415b896363e6a9c44d9a8ce                                                                                          0.0s
+ => => extracting sha256:24ff04c921070df4f4dc987278926d5dabde59d57b55ae3665439331f79af932                                                                                          0.3s
+ => => extracting sha256:361db81715472ecba5e656c314c299bd945309020483159596a8d123c2b1d580                                                                                          0.0s
+ => [internal] load build context                                                                                                                                                  0.0s
+ => => transferring context: 33.53kB                                                                                                                                               0.0s
+ => [2/5] WORKDIR /app                                                                                                                                                             0.2s
+ => [3/5] COPY requirements.txt .                                                                                                                                                  0.0s
+ => [4/5] RUN pip install --no-cache-dir -r requirements.txt                                                                                                                       2.9s
+ => [5/5] COPY . .                                                                                                                                                                 0.0s 
+ => exporting to image                                                                                                                                                             1.4s 
+ => => exporting layers                                                                                                                                                            0.9s 
+ => => exporting manifest sha256:d1e9b372880c0b65336eaf4930e3c9c1ee4be3654dbdb40994f90f0900cde26d                                                                                  0.0s 
+ => => exporting config sha256:f1e121bf1a0fe1e160bc0d57998a20ef1c6af49d96752e857aa0324ba1b7f512                                                                                    0.0s 
+ => => exporting attestation manifest sha256:5f1d61f6ebc66769e8397eaf8c217a4cff195932ec9c1ea6320321972dac8eb1                                                                      0.0s 
+ => => exporting manifest list sha256:c2b58f50658ce0dc3142359b36d6e98584d94c1a8f262e4a396a6bc084b2095a                                                                             0.0s
+ => => naming to docker.io/library/test2:latest                                                                                                                                    0.0s
+ => => unpacking to docker.io/library/test2:latest                                                                                                                                 0.5s
+user@USER:~/webappdemo/webappdemo$ sudo docker images
+                                                                                                                                                                    i Info →   U  In Use
+IMAGE          ID             DISK USAGE   CONTENT SIZE   EXTRA
+nginx:latest   5ab5b0b01097        243MB         66.8MB        
+test2:latest   c2b58f50658c        211MB         51.4MB        
+user@USER:~/webappdemo/webappdemo$ sudo doccker run -d --name web1 -p 9999:8080 test2
+sudo: doccker: command not found
+user@USER:~/webappdemo/webappdemo$ sudo docker run -d --name web1 -p 9999:8080 test2
+128154817c2daedf946c915225a0ff5894afa74039cb48cc7d184c5874d8db2b
+user@USER:~/webappdemo/webappdemo$ sudo docker ps 
+CONTAINER ID   IMAGE     COMMAND           CREATED          STATUS          PORTS                                         NAMES
+128154817c2d   test2     "python app.py"   26 seconds ago   Up 25 seconds   0.0.0.0:9999->8080/tcp, [::]:9999->8080/tcp   web1
+user@USER:~/webappdemo/webappdemo$ sudo docker rm web1 -f
+web1
+user@USER:~/webappdemo/webappdemo$ sudo docker rmi test2
+Untagged: test2:latest
+Deleted: sha256:c2b58f50658ce0dc3142359b36d6e98584d94c1a8f262e4a396a6bc084b2095a
+user@USER:~/webappdemo/webappdemo$ ls
+app.py  Dockerfile  requirements.txt  templates
+user@USER:~/webappdemo/webappdemo$ cat Dockerfile
+FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+EXPOSE 8080
+CMD ["python", "app.py"]user@USER:~docker pull python:3.11.18-slim-trixie
+permission denied while trying to connect to the docker API at unix:///var/run/docker.sock
+user@USER:~/webappdemo/webappdemo$ 
+
